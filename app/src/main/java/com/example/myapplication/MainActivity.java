@@ -23,25 +23,12 @@ import android.widget.RelativeLayout;
 public class MainActivity extends AppCompatActivity {
     private Button b1;
     private Button b3;
+    private Button b5;
     private FrameLayout but;
     private RelativeLayout GameButtons;
     private RelativeLayout GameButtons1;
-    /*@Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-            }
-        });
-    }*/
+    private RelativeLayout GameButtons2;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -98,10 +85,34 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        GameButtons2 = new RelativeLayout(this);
+        b5 = new Button(this);
+        b5.setText("attack");
+        //b3.setX(300);
+        //b3.setY(800);
+        //b1.setWidth(10);
+        //b1.setHeight(10);
+        b5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                gameView.updateattack();
+                try {
+                    Thread.sleep(800);
+                    gameView.updateposition();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+
         RelativeLayout.LayoutParams b2 = new RelativeLayout.LayoutParams(
                                      RelativeLayout.LayoutParams.WRAP_CONTENT,
                               RelativeLayout.LayoutParams.WRAP_CONTENT);
         RelativeLayout.LayoutParams b4 = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+        RelativeLayout.LayoutParams b6 = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
@@ -110,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
 
         GameButtons.addView(b1);
         GameButtons1.addView(b3);
+        GameButtons2.addView(b5);
         b2.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
         b2.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
         b1.setLayoutParams(b2);
@@ -118,10 +130,15 @@ public class MainActivity extends AppCompatActivity {
         b4.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
         b3.setLayoutParams(b4);
 
+        b6.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+        b6.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+        b5.setLayoutParams(b6);
+
         but = new FrameLayout(this);
         but.addView(gameView);
         but.addView(GameButtons);
         but.addView(GameButtons1);
+        but.addView(GameButtons2);
 
         setContentView(but);
         //setContentView(but);
@@ -146,6 +163,8 @@ public class MainActivity extends AppCompatActivity {
         private Bitmap bitmapRunningMan;
         private Bitmap bitmapRunningMon;
         private Bitmap bitmapRunningMan1;
+        private Bitmap bitmapRunningMan2;
+        private Bitmap bitmapwall;
 
         private boolean isMoving;
         private boolean back = false;
@@ -154,10 +173,15 @@ public class MainActivity extends AppCompatActivity {
         private float manXPos = 10, manYPos = 600;
         private float manXPos1 = 600, manYPos1 = 600;
         private float manXPos2 = 600, manYPos2 = 600;
+        private float manXPos3 = 0, manYPos3 = 860;
         private int frameWidth = 200, frameHeight = 265;
-        private int frameWidth1 = 200, frameHeight1 = 265;
+        private int frameWidth1 = 300, frameHeight1 = 265;
+        private int frameWidth2 = 320;
+        private int frameWidth3 = 1250;
+        private int frameHeight3 = 200;
         private int frameCount = 8;
-        private int frameCount1 = 20;
+        private int frameCount1 = 8;
+        private int frameCount2 = 5;
         private int currentFrame = 0;
         private int currentFrame1 = 0;
         private long fps;
@@ -166,21 +190,26 @@ public class MainActivity extends AppCompatActivity {
         private int frameLengthInMillisecond = 100;
         private Rect frameToDraw = new Rect(0, 0, frameWidth, frameHeight);
         private RectF whereToDraw = new RectF(manXPos, manYPos, manXPos + frameWidth, frameHeight);
-        private Rect frameToDraw2 = new Rect(0, 0, frameWidth, frameHeight);
+        private Rect frameToDraw2 = new Rect(0, 0, frameWidth2, frameHeight);
         private RectF whereToDraw2 = new RectF(manXPos, manYPos, manXPos + frameWidth, frameHeight);
         private Rect frameToDraw1 = new Rect(0, 0, frameWidth1, frameHeight1);
         private RectF whereToDraw1 = new RectF(manXPos1, manYPos1, manXPos1 + frameWidth1, frameHeight1);
+        private Rect frameToDraw3 = new Rect(0, 0, frameWidth3, frameHeight3);
+        private RectF whereToDraw3 = new RectF(manXPos3, manYPos3, manXPos3 + frameWidth3, frameHeight3);
 
         public GameView(Context context) {
             super(context);
             ourHolder = getHolder();
             bitmapRunningMan = BitmapFactory.decodeResource(getResources(), R.drawable.spritewalk1);
             bitmapRunningMan = Bitmap.createScaledBitmap(bitmapRunningMan, frameWidth * frameCount, frameHeight, false);
-            bitmapRunningMon = BitmapFactory.decodeResource(getResources(), R.drawable.finalmon);
+            bitmapRunningMon = BitmapFactory.decodeResource(getResources(), R.drawable.fimon);
             bitmapRunningMon = Bitmap.createScaledBitmap(bitmapRunningMon, frameWidth1 * frameCount1, frameHeight1, false);
             bitmapRunningMan1 = BitmapFactory.decodeResource(getResources(), R.drawable.spritewalkrev);
             bitmapRunningMan1 = Bitmap.createScaledBitmap(bitmapRunningMan1, frameWidth * frameCount, frameHeight, false);
-
+            bitmapRunningMan2 = BitmapFactory.decodeResource(getResources(), R.drawable.attack1);
+            bitmapRunningMan2 = Bitmap.createScaledBitmap(bitmapRunningMan2, frameWidth2 * frameCount2, frameHeight, false);
+            bitmapwall = BitmapFactory.decodeResource(getResources(), R.drawable.grass);
+            //bitmapRunningMan2 = Bitmap.createScaledBitmap(bitmapRunningMan2, frameWidth2 * frameCount2, frameHeight, false);
         }
         @Override
         public void run() {
@@ -229,6 +258,11 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                 }
+                if(!front && !back){
+                    frameLengthInMillisecond = 130;
+                }else{
+                    frameLengthInMillisecond = 100;
+                }
             }
         }
 
@@ -243,6 +277,13 @@ public class MainActivity extends AppCompatActivity {
             //manXPos = 10;
             back = false;
             front = true;
+            //canvas.drawBitmap(bitmapRunningMan1, frameToDraw, whereToDraw, null);
+        }
+
+        public void updateattack(){
+            //manXPos = 10;
+            back = false;
+            front = false;
             //canvas.drawBitmap(bitmapRunningMan1, frameToDraw, whereToDraw, null);
         }
 
@@ -267,6 +308,10 @@ public class MainActivity extends AppCompatActivity {
             frameToDraw.right = frameToDraw.left + frameWidth;
             frameToDraw1.left = currentFrame1 * frameWidth1;
             frameToDraw1.right = frameToDraw1.left + frameWidth1;
+
+            frameToDraw2.left = currentFrame * frameWidth2;
+            frameToDraw2.right = frameToDraw2.left + frameWidth2;
+
         }
         public void draw() {
             if (ourHolder.getSurface().isValid()) {
@@ -274,15 +319,25 @@ public class MainActivity extends AppCompatActivity {
                 canvas.drawColor(Color.WHITE);
                 whereToDraw.set((int) manXPos, (int) manYPos, (int) manXPos + frameWidth, (int) manYPos + frameHeight);
                 whereToDraw1.set((int) manXPos1, (int) manYPos1, (int) manXPos1 + frameWidth1, (int) manYPos1 + frameHeight1);
+                whereToDraw2.set((int) manXPos, (int) manYPos, (int) manXPos + frameWidth2, (int) manYPos + frameHeight);
+                whereToDraw3.set((int) manXPos3, (int) manYPos3, (int) manXPos3 + frameWidth3, (int) manYPos3 + frameHeight3);
                 manageCurrentFrame();
                 if(front) {
                     canvas.drawBitmap(bitmapRunningMan, frameToDraw, whereToDraw, null);
                     canvas.drawBitmap(bitmapRunningMon, frameToDraw1, whereToDraw1, null);
+                    canvas.drawBitmap(bitmapwall,frameToDraw3,whereToDraw3,null);
                 }
 
                 if(back){
                     canvas.drawBitmap(bitmapRunningMan1, frameToDraw, whereToDraw, null);
                     canvas.drawBitmap(bitmapRunningMon, frameToDraw1, whereToDraw1, null);
+                    canvas.drawBitmap(bitmapwall,frameToDraw3,whereToDraw3,null);
+                }
+
+                if(!front && !back){
+                    canvas.drawBitmap(bitmapRunningMan2, frameToDraw2, whereToDraw2, null);
+                    canvas.drawBitmap(bitmapRunningMon, frameToDraw1, whereToDraw1, null);
+                    canvas.drawBitmap(bitmapwall,frameToDraw3,whereToDraw3,null);
                 }
                 ourHolder.unlockCanvasAndPost(canvas);
             }
