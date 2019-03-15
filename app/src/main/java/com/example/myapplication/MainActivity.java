@@ -164,6 +164,11 @@ public class MainActivity extends AppCompatActivity {
         private Bitmap bitmapRunningMan1;
         private Bitmap bitmapRunningMan2;
         private Bitmap bitmapwall;
+        private Bitmap bithealth;
+        private Bitmap bithealth1;
+        private Bitmap bithealth2;
+        private Bitmap bithealth3;
+        private Bitmap bithealth4;
 
         private boolean isMoving;
         private boolean back = false;
@@ -173,11 +178,16 @@ public class MainActivity extends AppCompatActivity {
         private float manXPos1 = 600, manYPos1 = 600;
         private float manXPos2 = 600, manYPos2 = 600;
         private float manXPos3 = 0, manYPos3 = 860;
+        private float manXPos4 = 600, manYPos4 = 100;
         private int frameWidth = 200, frameHeight = 265;
         private int frameWidth1 = 300, frameHeight1 = 250;
         private int frameWidth2 = 320;
         private int frameWidth3 = 1250;
         private int frameHeight3 = 200;
+
+        private int frameWidth4 = 400;
+        private int frameHeight4 = 80;
+
         private int frameCount = 8;
         private int frameCount1 = 8;
         private int frameCount2 = 5;
@@ -197,6 +207,9 @@ public class MainActivity extends AppCompatActivity {
         private Rect frameToDraw3 = new Rect(0, 0, frameWidth3, frameHeight3);
         private RectF whereToDraw3 = new RectF(manXPos3, manYPos3, manXPos3 + frameWidth3, frameHeight3);
 
+        private Rect frameToDraw4 = new Rect(0, 0, frameWidth4, frameHeight4);
+        private RectF whereToDraw4 = new RectF(manXPos4, manYPos4, manXPos4 + frameWidth4, frameHeight4);
+
         public GameView(Context context) {
             super(context);
             ourHolder = getHolder();
@@ -209,6 +222,11 @@ public class MainActivity extends AppCompatActivity {
             bitmapRunningMan2 = BitmapFactory.decodeResource(getResources(), R.drawable.attack1);
             bitmapRunningMan2 = Bitmap.createScaledBitmap(bitmapRunningMan2, frameWidth2 * frameCount2, frameHeight, false);
             bitmapwall = BitmapFactory.decodeResource(getResources(), R.drawable.grass);
+            bithealth = BitmapFactory.decodeResource(getResources(), R.drawable.health1_r);
+            bithealth1 = BitmapFactory.decodeResource(getResources(), R.drawable.health2);
+            bithealth2 = BitmapFactory.decodeResource(getResources(), R.drawable.health3);
+            bithealth3 = BitmapFactory.decodeResource(getResources(), R.drawable.health4);
+            bithealth4 = BitmapFactory.decodeResource(getResources(), R.drawable.health5);
             //bitmapRunningMan2 = Bitmap.createScaledBitmap(bitmapRunningMan2, frameWidth2 * frameCount2, frameHeight, false);
         }
         @Override
@@ -285,7 +303,11 @@ public class MainActivity extends AppCompatActivity {
             back = false;
             front = false;
             //canvas.drawBitmap(bitmapRunningMan1, frameToDraw, whereToDraw, null);
-
+            if(health >= 0) {
+                if (manXPos > manXPos1-200 && manXPos < manXPos1+200) {
+                    health = health - 20;
+                }
+            }
 
         }
 
@@ -323,35 +345,50 @@ public class MainActivity extends AppCompatActivity {
                 whereToDraw1.set((int) manXPos1, (int) manYPos1, (int) manXPos1 + frameWidth1, (int) manYPos1 + frameHeight1);
                 whereToDraw2.set((int) manXPos, (int) manYPos, (int) manXPos + frameWidth2, (int) manYPos + frameHeight);
                 whereToDraw3.set((int) manXPos3, (int) manYPos3, (int) manXPos3 + frameWidth3, (int) manYPos3 + frameHeight3);
+                whereToDraw4.set((int) manXPos4, (int) manYPos4, (int) manXPos4 + frameWidth4, (int) manYPos4 + frameHeight4);
                 manageCurrentFrame();
                 if(front) {
                     canvas.drawBitmap(bitmapRunningMan, frameToDraw, whereToDraw, null);
-                    if(health > 0) {
-                        canvas.drawBitmap(bitmapRunningMon, frameToDraw1, whereToDraw1, null);
-                    }
+
                     canvas.drawBitmap(bitmapwall,frameToDraw3,whereToDraw3,null);
+
                 }
 
                 if(back){
                     canvas.drawBitmap(bitmapRunningMan1, frameToDraw, whereToDraw, null);
-                    if(health > 0) {
-                        canvas.drawBitmap(bitmapRunningMon, frameToDraw1, whereToDraw1, null);
-                    }
+
                     canvas.drawBitmap(bitmapwall,frameToDraw3,whereToDraw3,null);
+
                 }
 
                 if(!front && !back){
                     canvas.drawBitmap(bitmapRunningMan2, frameToDraw2, whereToDraw2, null);
-                    if(health > 0) {
-                        canvas.drawBitmap(bitmapRunningMon, frameToDraw1, whereToDraw1, null);
-                    }
+
+
                     canvas.drawBitmap(bitmapwall,frameToDraw3,whereToDraw3,null);
-                    if(health > 0) {
-                        if (manXPos > manXPos1 - 50 && manXPos < manXPos1) {
-                            health = health - 10;
-                        }
+
+                }
+
+                if(health >= 0) {
+                    canvas.drawBitmap(bitmapRunningMon, frameToDraw1, whereToDraw1, null);
+                    if(health == 80){
+                        canvas.drawBitmap(bithealth,frameToDraw4,whereToDraw4,null);
+                    }
+                    if(health == 60 ){
+                        canvas.drawBitmap(bithealth1,frameToDraw4,whereToDraw4,null);
+                    }
+                    if(health == 40){
+                        canvas.drawBitmap(bithealth2,frameToDraw4,whereToDraw4,null);
+                    }
+                    if(health == 20){
+                        canvas.drawBitmap(bithealth3,frameToDraw4,whereToDraw4,null);
+                    }
+                    if(health == 0 ){
+                        canvas.drawBitmap(bithealth4,frameToDraw4,whereToDraw4,null);
                     }
                 }
+
+
                 ourHolder.unlockCanvasAndPost(canvas);
             }
         }
