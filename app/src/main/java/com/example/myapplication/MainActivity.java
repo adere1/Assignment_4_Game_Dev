@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
         private float manXPos2 = 600, manYPos2 = 600;
         private float manXPos3 = 0, manYPos3 = 860;
         private int frameWidth = 200, frameHeight = 265;
-        private int frameWidth1 = 300, frameHeight1 = 265;
+        private int frameWidth1 = 300, frameHeight1 = 250;
         private int frameWidth2 = 320;
         private int frameWidth3 = 1250;
         private int frameHeight3 = 200;
@@ -185,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
         private int currentFrame1 = 0;
         private long fps;
         private long timeThisFrame;
+        private int health = 100;
         private long lastFrameChangeTime = 0;
         private int frameLengthInMillisecond = 100;
         private Rect frameToDraw = new Rect(0, 0, frameWidth, frameHeight);
@@ -284,6 +285,8 @@ public class MainActivity extends AppCompatActivity {
             back = false;
             front = false;
             //canvas.drawBitmap(bitmapRunningMan1, frameToDraw, whereToDraw, null);
+
+
         }
 
 
@@ -323,20 +326,31 @@ public class MainActivity extends AppCompatActivity {
                 manageCurrentFrame();
                 if(front) {
                     canvas.drawBitmap(bitmapRunningMan, frameToDraw, whereToDraw, null);
-                    canvas.drawBitmap(bitmapRunningMon, frameToDraw1, whereToDraw1, null);
+                    if(health > 0) {
+                        canvas.drawBitmap(bitmapRunningMon, frameToDraw1, whereToDraw1, null);
+                    }
                     canvas.drawBitmap(bitmapwall,frameToDraw3,whereToDraw3,null);
                 }
 
                 if(back){
                     canvas.drawBitmap(bitmapRunningMan1, frameToDraw, whereToDraw, null);
-                    canvas.drawBitmap(bitmapRunningMon, frameToDraw1, whereToDraw1, null);
+                    if(health > 0) {
+                        canvas.drawBitmap(bitmapRunningMon, frameToDraw1, whereToDraw1, null);
+                    }
                     canvas.drawBitmap(bitmapwall,frameToDraw3,whereToDraw3,null);
                 }
 
                 if(!front && !back){
                     canvas.drawBitmap(bitmapRunningMan2, frameToDraw2, whereToDraw2, null);
-                    canvas.drawBitmap(bitmapRunningMon, frameToDraw1, whereToDraw1, null);
+                    if(health > 0) {
+                        canvas.drawBitmap(bitmapRunningMon, frameToDraw1, whereToDraw1, null);
+                    }
                     canvas.drawBitmap(bitmapwall,frameToDraw3,whereToDraw3,null);
+                    if(health > 0) {
+                        if (manXPos > manXPos1 - 50 && manXPos < manXPos1) {
+                            health = health - 10;
+                        }
+                    }
                 }
                 ourHolder.unlockCanvasAndPost(canvas);
             }
