@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
     private FrameLayout but;
     private RelativeLayout GameButtons;
     private RelativeLayout GameButtons1;
-                        .setAction("Action", null).show();
     private RelativeLayout GameButtons2;
 
     @Override
